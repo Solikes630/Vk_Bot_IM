@@ -368,13 +368,6 @@ for event in longpoll.listen():
 									cancel = 1
 									write_msg(event.user_id, "удачи",keyboard)
 									break
-					if request == "отмена" or cancel == 1:
-						if cancel == 1:
-							break
-						elif request == "отмена":
-							cancel = 1
-							write_msg(event.user_id, "удачи",keyboard)
-							break
 			elif request == "DeleteProgramUse":
 				break
 			elif request == "отмена":
