@@ -375,9 +375,9 @@ for event in longpoll.listen():
 							cancel = 1
 							write_msg(event.user_id, "удачи",keyboard)
 							break
-			elif request == "DeleteProgramUse":
-				break
-			elif request == "отмена":
-				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
-			else:
-				write_msg(event.user_id, "я вас не понял",keyboard)
+		elif request == "DeleteProgramUse":
+			break
+		elif request == "отмена":
+			write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
+		else:
+			write_msg(event.user_id, "я вас не понял",keyboard)
