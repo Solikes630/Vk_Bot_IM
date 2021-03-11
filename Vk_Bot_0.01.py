@@ -17,7 +17,7 @@ def get_but(text,color):
 keyboard = {
 	"one_time" : False,
 	"buttons" : [
-		[get_but('создать','positive'), get_but('пройти','positive')],
+		[get_but('создать','positive'), get_but('присоединиться','positive')],
 		[get_but('отмена','positive')]
 	]
 }
@@ -78,6 +78,7 @@ cur.execute("""CREATE TABLE IF NOT EXISTS question (
 	answer5 TEXT);
 """)
 con.commit()
+
 def answerlisten():
 	global text
 	global cancel
@@ -172,6 +173,7 @@ def read_table(id_II):
 	cur.execute("SELECT answer5 FROM question WHERE id =" + str(id_III))
 	answer5 = cur.fetchone()
 	answer5 = str(str(answer5)[2:-3])
+
 def user_answert(textI):
 	global answer_user
 	global cancel
@@ -195,29 +197,34 @@ def check():
 	if answer_user1 == answer1:
 		bl1 = "верно"
 	else:
-		bl1 = "неверно"
+		bl1 = "не верно"
 	if answer_user2 == answer2:
 		bl2 = "верно"
 	else:
-		bl2 = "неверно"
+		bl2 = "не верно"
 	if answer_user3 == answer3:
 		bl3 = "верно"
 	else:
-		bl3 = "неверно"
+		bl3 = "не верно"
 	if answer_user4 == answer4:
 		bl4 = "верно"
 	else:
-		bl4 = "неверно"
+		bl4 = "не верно"
 	if answer_user5 == answer5:
 		bl5 = "верно"
 	else:
-		bl5 = "неверно"
+		bl5 = "не верно"
+
 for event in longpoll.listen():
 	if event.type == VkEventType.MESSAGE_NEW:
 		if event.to_me:
 			request = event.text
 			t = 0
 			if request == "привет" or request == "Привет":
+				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
+			elif request == "DeleteProgramUse":
+				break
+			elif request == "отмена":
 				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
 			elif request == "Создать" or request == "создать":
 				request = 0
@@ -252,13 +259,12 @@ for event in longpoll.listen():
 												if request != "отмена" and cancel != 1 :
 													answer5 = request
 													text5 = text
-													t=0
 													write_msg(event.user_id, "подтвердите создание",keyboardI)
 													for event in longpoll.listen():
 														if event.type == VkEventType.MESSAGE_NEW:
 															if event.to_me:
 																request = event.text
-																if request == "подтвердить" and cancel != 1 and t == 0:
+																if request == "подтвердить" and cancel != 1:
 																	random_id ()
 																	cur.execute(f"SELECT id FROM question WHERE id = '{id}'")
 																	while t==0:
@@ -267,12 +273,11 @@ for event in longpoll.listen():
 																			cur.execute(f"INSERT INTO question VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",(id, event.user_id, text1, answer1, text2, answer2, text3, answer3, text4, answer4, text5, answer5))
 																			con.commit()
 																			t = 1
-																			break
 																		else:
 																			random_id ()
 																	break
-																elif request == "отмена" or cancel == 1 or t == 1:
-																	if cancel == 1 or t == 1:
+																elif request == "отмена" or cancel == 1:
+																	if cancel == 1:
 																		break
 																	else:
 																		cancel = 1
@@ -294,7 +299,7 @@ for event in longpoll.listen():
 										cancel = 1
 										write_msg(event.user_id, "удачи",keyboard)
 										break					
-			elif request == "пройти" or "Пройти":
+			elif request == "присоединиться":
 				cancel = 0
 				answer_user = 0
 				write_msg(event.user_id, "введите id задания",keyboardII)
@@ -304,56 +309,45 @@ for event in longpoll.listen():
 							request = event.text
 							if request != "отмена" :
 								id_I = request
-								cur.execute(f"SELECT id FROM question WHERE id = '{id_I}'")
-								if cur.fetchone() is None:
-									write_msg(event.user_id, "такого задания нету",keyboardII)
-								else:
-									read_table(id_I)
-									write_msg(event.user_id, text1 ,keyboardII)
-									for event in longpoll.listen():
-										if event.type == VkEventType.MESSAGE_NEW:
-											if event.to_me:
-												request = event.text
+								read_table(id_I)
+								write_msg(event.user_id, text1 ,keyboardII)
+								for event in longpoll.listen():
+									if event.type == VkEventType.MESSAGE_NEW:
+										if event.to_me:
+											request = event.text
+											if request != "отмена" and cancel != 1:
+												answer_user1 = request
+												write_msg(event.user_id, text2 ,keyboardII)
+												if cancel!= 1:
+													user_answert(text3)
+												answer_user2 = answer_user
+												if cancel!= 1:
+													user_answert(text4)
+												answer_user3 = answer_user
+												if cancel!= 1:
+													user_answert(text5)
+												answer_user4 = answer_user
 												if request != "отмена" and cancel != 1:
-													answer_user1 = request
-													write_msg(event.user_id, text2 ,keyboardII)
-													if cancel!= 1:
-														user_answert(text3)
-													answer_user2 = answer_user
-													if cancel!= 1:
-														user_answert(text4)
-													answer_user3 = answer_user
-													if cancel!= 1:
-														user_answert(text5)
-													answer_user4 = answer_user
-													if request != "отмена" and cancel != 1:
-														for event in longpoll.listen():
-															if event.type == VkEventType.MESSAGE_NEW:
-																if event.to_me:
-																	answer_user = event.text
-																	if request != "отмена" and cancel != 1:
-																		answer_user5 = answer_user
-																		check()
-																		write_msg(event.user_id, "Ваш ответ:" + "\n" + " " + answer_user1 + "\n" + "Правильный ответ:" + "\n" + " " + answer1 + "\n" + "задание выполнено:" + "\n" + " " + bl1 ,keyboard)
-																		write_msg(event.user_id, "Ваш ответ:" + "\n" + " " + answer_user2 + "\n" + "Правильный ответ:" + "\n" + " " + answer2 + "\n" + "задание выполнено:" + "\n" + " " + bl2 ,keyboard)
-																		write_msg(event.user_id, "Ваш ответ:" + "\n" + " " + answer_user3 + "\n" + "Правильный ответ:" + "\n" + " " + answer3 + "\n" + "задание выполнено:" + "\n" + " " + bl3 ,keyboard)
-																		write_msg(event.user_id, "Ваш ответ:" + "\n" + " " + answer_user4 + "\n" + "Правильный ответ:" + "\n" + " " + answer4 + "\n" + "задание выполнено:" + "\n" + " " + bl4 ,keyboard)
-																		write_msg(event.user_id, "Ваш ответ:" + "\n" + " " + answer_user5 + "\n" + "Правильный ответ:" + "\n" + " " + answer5 + "\n" + "задание выполнено:" + "\n" + " " + bl5 ,keyboard)
+													for event in longpoll.listen():
+														if event.type == VkEventType.MESSAGE_NEW:
+															if event.to_me:
+																answer_user = event.text
+																if request != "отмена" and cancel != 1:
+																	answer_user5 = answer_user
+																	check()
+																	write_msg(event.user_id, "ваш ответ:" + "\n" + " " + answer_user1 + "\n" + "правильный ответ:" + "\n" + " " + answer1 + "\n" + "задание выполненно:" + "\n" + " " + bl1 ,keyboard)
+																	write_msg(event.user_id, "ваш ответ:" + "\n" + " " + answer_user2 + "\n" + "правильный ответ:" + "\n" + " " + answer2 + "\n" + "задание выполненно:" + "\n" + " " + bl2 ,keyboard)
+																	write_msg(event.user_id, "ваш ответ:" + "\n" + " " + answer_user3 + "\n" + "правильный ответ:" + "\n" + " " + answer3 + "\n" + "задание выполненно:" + "\n" + " " + bl3 ,keyboard)
+																	write_msg(event.user_id, "ваш ответ:" + "\n" + " " + answer_user4 + "\n" + "правильный ответ:" + "\n" + " " + answer4 + "\n" + "задание выполненно:" + "\n" + " " + bl4 ,keyboard)
+																	write_msg(event.user_id, "ваш ответ:" + "\n" + " " + answer_user5 + "\n" + "правильный ответ:" + "\n" + " " + answer5 + "\n" + "задание выполненно:" + "\n" + " " + bl5 ,keyboard)
+																	break
+																elif request == "отмена" or cancel == 1:
+																	if cancel == 1:
 																		break
-																	elif request == "отмена" or cancel == 1:
-																		if cancel == 1:
-																			break
-																		elif request == "отмена":
-																			cancel = 1
-																			write_msg(event.user_id, "удачи",keyboard)
-																			break
-													elif request == "отмена" or cancel == 1:
-														if cancel == 1:
-															break
-														elif request == "отмена":
-															cancel = 1
-															write_msg(event.user_id, "удачи",keyboard)
-															break
+																	elif request == "отмена":
+																		cancel = 1
+																		write_msg(event.user_id, "удачи",keyboard)
+																		break
 												elif request == "отмена" or cancel == 1:
 													if cancel == 1:
 														break
@@ -361,6 +355,13 @@ for event in longpoll.listen():
 														cancel = 1
 														write_msg(event.user_id, "удачи",keyboard)
 														break
+											elif request == "отмена" or cancel == 1:
+												if cancel == 1:
+													break
+												elif request == "отмена":
+													cancel = 1
+													write_msg(event.user_id, "удачи",keyboard)
+													break
 							elif request == "отмена" or cancel == 1:
 								if cancel == 1:
 									break
@@ -368,9 +369,10 @@ for event in longpoll.listen():
 									cancel = 1
 									write_msg(event.user_id, "удачи",keyboard)
 									break
-			elif request == "DeleteProgramUse":
-				break
-			elif request == "отмена":
-				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
-			else:
-				write_msg(event.user_id, "я вас не понял",keyboard)
+					if request == "отмена" or cancel == 1:
+						if cancel == 1:
+							break
+						elif request == "отмена":
+							cancel = 1
+							write_msg(event.user_id, "удачи",keyboard)
+							break
