@@ -132,8 +132,8 @@ def random_id ():
 		time+=1
 		id=str(id) + str(random.choice(number_list))
 def correct (tofix):
-	global bo
-	global al 
+    global bo
+    global al 
     a = str(tofix)
     bo = a.split('\\n')
     fixed = ""
