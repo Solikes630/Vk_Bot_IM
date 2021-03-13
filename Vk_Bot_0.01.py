@@ -139,7 +139,7 @@ def correct (tofix):
     fixed = ""
     for number in bo:
         fixed += number+"\n"
-    bo = str(str(fixed)[2:-4])
+    bo = str(str(fixed)[1:-4])
     bo = bo.replace("&quot;", "&#34;")
 def read_table(id_II):
 	global text1, answer1, text2, answer2, text3, answer3, text4, answer4, text5, answer5
