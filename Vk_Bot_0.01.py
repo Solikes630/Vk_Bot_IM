@@ -131,48 +131,69 @@ def random_id ():
 		number_list = ['0', '1', '2', '3', '4','5', '6', '7', '8', '9']
 		time+=1
 		id=str(id) + str(random.choice(number_list))
+def correct (tofix):
+	global bo
+	global al 
+    a = str(tofix)
+    bo = a.split('\\n')
+    fixed = ""
+    for number in bo:
+        fixed += number+"\n"
+    bo = str(str(fixed)[2:-4])
+    bo = bo.replace("&quot;", "&#34;")
 def read_table(id_II):
-	global text1
-	global answer1
-	global text2
-	global answer2
-	global text3
-	global answer3
-	global text4
-	global answer4
-	global text5
-	global answer5
+	global text1, answer1, text2, answer2, text3, answer3, text4, answer4, text5, answer5
 	id_III = id_II
 	cur.execute("SELECT text1 FROM question WHERE id =" + str(id_III))
 	test1 = cur.fetchone()
 	text1 = str(str(test1)[2:-3])
+	correct (text1)
+	text1 = bo
 	cur.execute("SELECT answer1 FROM question WHERE id =" + str(id_III))
 	answer1 = cur.fetchone()
 	answer1 = str(str(answer1)[2:-3])
+	correct (answer1)
+	answer1 = bo
 	cur.execute("SELECT text2 FROM question WHERE id =" + str(id_III))
 	test2 = cur.fetchone()
 	text2 = str(str(test2)[2:-3])
+	correct (text2)
+	text2 = bo
 	cur.execute("SELECT answer2 FROM question WHERE id =" + str(id_III))
 	answer2 = cur.fetchone()
 	answer2 = str(str(answer2)[2:-3])
+	correct (answer2)
+	answer2 = bo
 	cur.execute("SELECT text3 FROM question WHERE id =" + str(id_III))
 	test3 = cur.fetchone()
 	text3 = str(str(test3)[2:-3])
+	correct (text3)
+	text3 = bo
 	cur.execute("SELECT answer3 FROM question WHERE id =" + str(id_III))
 	answer3 = cur.fetchone()
 	answer3 = str(str(answer3)[2:-3])
+	correct (answer3)
+	answer3 = bo
 	cur.execute("SELECT text4 FROM question WHERE id =" + str(id_III))
 	test4 = cur.fetchone()
 	text4 = str(str(test4)[2:-3])
+	correct (text4)
+	text4 = bo
 	cur.execute("SELECT answer4 FROM question WHERE id =" + str(id_III))
 	answer4 = cur.fetchone()
 	answer4 = str(str(answer4)[2:-3])
+	correct (answer4)
+	answer4 = bo
 	cur.execute("SELECT text5 FROM question WHERE id =" + str(id_III))
 	test5 = cur.fetchone()
 	text5 = str(str(test5)[2:-3])
+	correct (text5)
+	text5 = bo
 	cur.execute("SELECT answer5 FROM question WHERE id =" + str(id_III))
 	answer5 = cur.fetchone()
 	answer5 = str(str(answer5)[2:-3])
+	correct (answer5)
+	answer5 = bo
 
 def user_answert(textI):
 	global answer_user
@@ -221,6 +242,10 @@ for event in longpoll.listen():
 			request = event.text
 			t = 0
 			if request == "привет" or request == "Привет":
+				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
+			elif request == "DeleteProgramUse":
+				break
+			elif request == "отмена":
 				write_msg(event.user_id, "Я бот для создания и прохождения опросов. \n Создать/Пройти",keyboard)
 			elif request == "DeleteProgramUse":
 				break
@@ -376,3 +401,5 @@ for event in longpoll.listen():
 							cancel = 1
 							write_msg(event.user_id, "удачи",keyboard)
 							break
+			else:
+				write_msg(event.user_id, "я вас не понял",keyboard)
